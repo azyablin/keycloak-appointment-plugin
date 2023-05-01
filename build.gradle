@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+    id("io.freefair.lombok") version "6.6.3"
+    id("com.github.johnrengelman.shadow") version "7.1.0"
+}
+
+group 'com.zav'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+
+}
+
+ext {
+    keycloakVersion = '21.1.0'
+}
+
+
+
+dependencies {
+
+    compileOnly "org.keycloak:keycloak-core:$keycloakVersion"
+    compileOnly "org.keycloak:keycloak-server-spi:$keycloakVersion"
+    compileOnly "org.keycloak:keycloak-model-legacy:$keycloakVersion"
+    compileOnly 'mysql:mysql-connector-java:8.0.33'
+    implementation 'org.apache.tomcat:tomcat-jdbc:10.1.8'
+
+
+}
+
