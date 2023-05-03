@@ -1,17 +1,17 @@
 package com.zav.appointment.dao;
 
+import com.zav.appointment.domain.User;
 import com.zav.appointment.model.StorageInfo;
-import com.zav.appointment.model.User;
+import com.zav.appointment.model.UserWrapper;
 import java.sql.ResultSet;
 import java.util.List;
 import java.util.Locale;
 import lombok.SneakyThrows;
 import lombok.val;
-import org.keycloak.models.UserModel;
 
 public class UserDao {
 
-    public static UserModel getByName(StorageInfo storageInfo,  String username) {
+    public static org.keycloak.models.UserModel getByName(StorageInfo storageInfo, String username) {
         var sql = "select id, name from appointments.cd4w_user where upper(name) = '"
                 .concat(username.toUpperCase(Locale.ROOT))
                 .concat(";");
@@ -22,7 +22,7 @@ public class UserDao {
         return users.get(0);
     }
 
-    public static List<UserModel> getAll(StorageInfo storageInfo) {
+    public static List<org.keycloak.models.UserModel> getAll(StorageInfo storageInfo) {
         var sql = "select id, name from appointments.cd4w_user";
         return QueryExecutor.executeQuery(sql, resultSet -> mapUser(storageInfo, resultSet));
     }
@@ -34,11 +34,13 @@ public class UserDao {
     }
 
     @SneakyThrows
-    private static User mapUser(StorageInfo storageInfo, ResultSet resultSet) {
-        User user = new User(storageInfo);
+    private static UserWrapper mapUser(StorageInfo storageInfo, ResultSet resultSet) {
+        User user = new User();
         user.setId(resultSet.getLong(1));
         user.setUsername(resultSet.getString(1));
-        return user;
+        UserWrapper userModel = new UserWrapper(storageInfo, user);
+
+        return userModel;
     }
 
 

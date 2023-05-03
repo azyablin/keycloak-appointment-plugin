@@ -1,43 +1,32 @@
 package com.zav.appointment.model;
 
+import com.zav.appointment.domain.User;
 import org.keycloak.models.SubjectCredentialManager;
 import org.keycloak.storage.StorageId;
 import org.keycloak.storage.adapter.AbstractUserAdapterFederatedStorage;
 
 
-public class User extends AbstractUserAdapterFederatedStorage {
+public class UserWrapper extends AbstractUserAdapterFederatedStorage {
 
-    private String id;
+    private final User user;
 
-    private String username;
-
-    public User(StorageInfo storageInfo) {
+    public UserWrapper(StorageInfo storageInfo, User user) {
         super(storageInfo.ksession(), storageInfo.realm(), storageInfo.model());
+        this.user = user;
     }
 
     @Override
     public String getUsername() {
-        return username;
+        return user.getUsername();
     }
 
     @Override
     public void setUsername(String username) {
-        this.username = username;
-    }
-
-    @Override
-    public SubjectCredentialManager credentialManager() {
-        return null;
-    }
-
-
-    public void setId(Long id) {
-        this.id = StorageId.keycloakId(storageProviderModel, id.toString());
+        this.user.setUsername(username);
     }
 
     @Override
     public String getId() {
-        return id;
+        return StorageId.keycloakId(storageProviderModel, user.getId().toString());
     }
-
 }
