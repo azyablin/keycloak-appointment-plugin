@@ -4,6 +4,7 @@ import com.zav.appointment.datasource.TomcatDatasource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -14,25 +15,32 @@ import lombok.SneakyThrows;
 
 public class QueryExecutor {
 
+    private static final String LIKE_PATTERN = "%";
+
     @SneakyThrows
-    public static <T> List<T> executeQuery(String sql, Function<ResultSet, T> mapper) {
+    public static <T> List<T> executeQuery(String sql, Function<ResultSet, T> resultMapper,
+            List params) {
         @Cleanup
-        var rs = new CloseableResultSet().executeQuery(sql);
+        var rs = new CloseableResultSet().executeQuery(sql, params);
         List<T> result = new ArrayList<>();
         while (rs.getResultSet().next()) {
-            result.add(mapper.apply(rs.getResultSet()));
+            result.add(resultMapper.apply(rs.getResultSet()));
         }
         return result;
     }
 
     @SneakyThrows
-    public static Optional<Object> executeQuerySingle(String sql) {
+    public static Optional<Object> executeQuerySingle(String sql, List params) {
         @Cleanup
-        var rs = new CloseableResultSet().executeQuery(sql);
+        var rs = new CloseableResultSet().executeQuery(sql, params);
         while (rs.getResultSet().next()) {
-            return Optional.ofNullable(rs.getResultSet().getObject(1)) ;
+            return Optional.ofNullable(rs.getResultSet().getObject(1));
         }
         return Optional.empty();
+    }
+
+    public static String createLikeString(String search) {
+        return LIKE_PATTERN.concat(search.replace(" ", LIKE_PATTERN)).concat(LIKE_PATTERN);
     }
 
 
@@ -46,10 +54,20 @@ public class QueryExecutor {
         private ResultSet resultSet;
 
         @SneakyThrows
-        public CloseableResultSet executeQuery(String sql) {
+        public CloseableResultSet executeQuery(String sql, List params) {
             close();
             connection = TomcatDatasource.getDataSource().getConnection();
             statement = connection.prepareStatement(sql);
+            Optional.ofNullable(params).ifPresent(list -> {
+                for (int i = 1; i <= params.size(); ++i) {
+                    try {
+                        statement.setObject(i, params.get(i - 1));
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+
             resultSet = statement.executeQuery();
             return this;
         }
@@ -67,6 +85,8 @@ public class QueryExecutor {
                 resultSet.close();
             }
         }
+
+
     }
 
 }

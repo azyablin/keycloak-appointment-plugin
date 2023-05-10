@@ -17,7 +17,7 @@ public class TomcatDatasource {
     private static javax.sql.DataSource createDataSource() {
         DataSource ds = new DataSource();
         ds.setDriverClassName("com.mysql.jdbc.Driver");
-        ds.setUrl("jdbc:mysql://127.0.0.1:3306/appointments");
+        ds.setUrl("jdbc:mysql://127.0.0.1:3306/appointments?currentSchema=appointments");
         ds.setUsername("user");
         ds.setPassword("07831505");
         ds.setInitialSize(5);
