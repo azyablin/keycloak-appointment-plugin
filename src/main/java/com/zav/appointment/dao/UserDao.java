@@ -3,10 +3,7 @@ package com.zav.appointment.dao;
 import com.zav.appointment.model.User;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.stream.Stream;
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
@@ -28,13 +25,10 @@ public class UserDao {
             inner join cd4w_role r on r.id = rp.role_id where r.name = ?) LIMIT ?, ?
             """;
 
-    public static User getByName(String username) {
-        var sql = BASE_SQL + " where upper(name) = ?";
+    public static Optional<User> getByName(String username) {
+        var sql = BASE_SQL + " where upper(msisdn) = ?";
         val users = QueryExecutor.executeQuery(sql, UserDao::mapUser, List.of(username));
-        if (users.isEmpty()) {
-            return null;
-        }
-        return users.get(0);
+        return users.stream().findFirst();
     }
 
 

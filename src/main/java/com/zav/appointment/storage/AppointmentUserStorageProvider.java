@@ -60,9 +60,9 @@ public class AppointmentUserStorageProvider implements UserStorageProvider,
 
     @Override
     public UserModel getUserByUsername(RealmModel realm, String username) {
-        val user = UserDao.getByName(username);
-        return new UserAdapter(user, ksession, realm, model);
-
+        return UserDao.getByName(username)
+                .map(u -> new UserAdapter(u, ksession, realm, model))
+                .orElse(null);
     }
 
     @Override
