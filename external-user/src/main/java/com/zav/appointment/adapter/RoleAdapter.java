@@ -17,7 +17,7 @@ public class RoleAdapter implements RoleModel {
 
     @Override
     public void addCompositeRole(RoleModel role) {
-        
+
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.zav.appointment.storage;
+package com.zav.appointment.provider;
 
 import com.zav.appointment.adapter.UserAdapter;
 import com.zav.appointment.dao.UserDao;

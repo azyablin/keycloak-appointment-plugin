@@ -1,4 +1,4 @@
-package com.zav.appointment.storage;
+package com.zav.appointment.provider;
 
 import java.util.List;
 import org.keycloak.component.ComponentModel;
@@ -33,7 +33,7 @@ public class AppointmentUserStorageProviderFactory implements UserStorageProvide
 
     @Override
     public String getId() {
-        return  "appointment-user-storage-provider";
+        return "appointment-user-storage-provider";
     }
 
 
