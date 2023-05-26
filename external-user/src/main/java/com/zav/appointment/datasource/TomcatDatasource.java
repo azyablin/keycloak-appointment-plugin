@@ -34,9 +34,9 @@ public class TomcatDatasource {
                 config.getFirst(APPOINTMENT_DB_DRIVER_CLASS_NAME.name())));
         ds.setUrl(envConfigReader.readValue(APPOINTMENT_DB_URL.name(),
                 config.getFirst(APPOINTMENT_DB_URL.name())));
-        ds.setUrl(envConfigReader.readValue(APPOINTMENT_DB_USER.name(),
+        ds.setUsername(envConfigReader.readValue(APPOINTMENT_DB_USER.name(),
                 config.getFirst(APPOINTMENT_DB_USER.name())));
-        ds.setUrl(envConfigReader.readValue(APPOINTMENT_DB_PASSWORD.name(),
+        ds.setPassword(envConfigReader.readValue(APPOINTMENT_DB_PASSWORD.name(),
                 config.getFirst(APPOINTMENT_DB_PASSWORD.name())));
         ds.setInitialSize(envConfigReader.readIntValue(APPOINTMENT_DB_POOL_INITIAL_SIZE.name(),
                 Integer.valueOf(config.getFirst(APPOINTMENT_DB_POOL_INITIAL_SIZE.name()))));
