@@ -2,9 +2,9 @@ package com.zav.appointment.provider;
 
 import com.zav.appointment.adapter.UserAdapter;
 import com.zav.appointment.dao.UserDao;
+import com.zav.appointment.datasource.TomcatDatasource;
 import java.util.Map;
 import java.util.stream.Stream;
-import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.credential.CredentialInput;
@@ -20,15 +20,20 @@ import org.keycloak.storage.UserStorageProvider;
 import org.keycloak.storage.user.UserLookupProvider;
 import org.keycloak.storage.user.UserQueryProvider;
 
-@RequiredArgsConstructor
 public class AppointmentUserStorageProvider implements UserStorageProvider,
         UserLookupProvider,
         CredentialInputValidator,
         UserQueryProvider {
 
-    private final KeycloakSession ksession;
+    private final KeycloakSession session;
 
     private final ComponentModel model;
+
+    public AppointmentUserStorageProvider(KeycloakSession session, ComponentModel model) {
+        this.session = session;
+        this.model = model;
+        TomcatDatasource.setConfig(model.getConfig());
+    }
 
     @Override
     public boolean supportsCredentialType(String credentialType) {
@@ -55,13 +60,13 @@ public class AppointmentUserStorageProvider implements UserStorageProvider,
     public UserModel getUserById(RealmModel realm, String id) {
         String userId = StorageId.externalId(id);
         val user = UserDao.getById(userId);
-        return new UserAdapter(user, ksession, realm, model);
+        return new UserAdapter(user, session, realm, model);
     }
 
     @Override
     public UserModel getUserByUsername(RealmModel realm, String username) {
         return UserDao.getByName(username)
-                .map(u -> new UserAdapter(u, ksession, realm, model))
+                .map(u -> new UserAdapter(u, session, realm, model))
                 .orElse(null);
     }
 
@@ -72,12 +77,12 @@ public class AppointmentUserStorageProvider implements UserStorageProvider,
 
     @Override
     public Stream<UserModel> searchForUserStream(RealmModel realm, String search, Integer firstResult, Integer maxResults) {
-        return UserDao.search(search, firstResult, maxResults).stream().map(user -> new UserAdapter(user, ksession, realm, model));
+        return UserDao.search(search, firstResult, maxResults).stream().map(user -> new UserAdapter(user, session, realm, model));
     }
 
     @Override
     public Stream<UserModel> searchForUserStream(RealmModel realm, Map<String, String> params, Integer firstResult, Integer maxResults) {
-        return UserDao.search(null, firstResult, maxResults).stream().map(user -> new UserAdapter(user, ksession, realm, model));
+        return UserDao.search(null, firstResult, maxResults).stream().map(user -> new UserAdapter(user, session, realm, model));
     }
 
     @Override
@@ -97,7 +102,7 @@ public class AppointmentUserStorageProvider implements UserStorageProvider,
 
     @Override
     public Stream<UserModel> getRoleMembersStream(RealmModel realm, RoleModel role, Integer firstResult, Integer maxResults) {
-        return UserDao.findByRoleName(role.getName(), firstResult, maxResults).stream().map(user -> new UserAdapter(user, ksession, realm, model));
+        return UserDao.findByRoleName(role.getName(), firstResult, maxResults).stream().map(user -> new UserAdapter(user, session, realm, model));
     }
 
     @Override
