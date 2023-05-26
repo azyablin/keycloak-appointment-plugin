@@ -1,4 +1,5 @@
 rootProject.name = 'keycloak-appointment-plugin'
 include 'required'
 include 'external-user'
+include 'common'
 
